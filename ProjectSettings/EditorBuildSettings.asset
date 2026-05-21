@@ -9,7 +9,7 @@ EditorBuildSettings:
     path: Assets/Scenes/02_BombTest.unity
     guid: 3b76f46f0f2cdee43ab86a9e0a0caa28
   - enabled: 1
-    path: Assets/Scenes/03_CharacterSelect.unity
+    path: Assets/Scenes/03_CharacterSelection.unity
     guid: 1ff96099775b62e448ca11ad222e28a3
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
