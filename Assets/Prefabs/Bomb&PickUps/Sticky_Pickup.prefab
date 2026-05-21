@@ -67,7 +67,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 2
+  m_Radius: 1.6
 --- !u!1 &5737930972991603035
 GameObject:
   m_ObjectHideFlags: 0
@@ -135,7 +135,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 2
+  m_Radius: 1.6
 --- !u!1 &6268137492468819005
 GameObject:
   m_ObjectHideFlags: 0
@@ -150,7 +150,7 @@ GameObject:
   - component: {fileID: 8789811953524928142}
   - component: {fileID: 4548882865415403085}
   m_Layer: 6
-  m_Name: Health_Pickup
+  m_Name: Sticky_Pickup
   m_TagString: Pickup
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -222,7 +222,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 4473125920975346245, guid: abb4bcdda72faf04b9a07221c436d7de, type: 3}
+  m_Sprite: {fileID: -3851510604749376220, guid: abb4bcdda72faf04b9a07221c436d7de, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -242,7 +242,7 @@ Animator:
   m_GameObject: {fileID: 6268137492468819005}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: 464e4c95bb7f39d42bcca1966ce7a9ca, type: 2}
+  m_Controller: {fileID: 22100000, guid: dbce87e8b39d9ab449778d381866bb9f, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -266,7 +266,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd63ec8890039a44fb2e20fcd0b815f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Collectibles
-  pickupType: 0
+  pickupType: 3
   lifeTime: 6
   animator: {fileID: 40517434887343055}
 --- !u!50 &4548882865415403085

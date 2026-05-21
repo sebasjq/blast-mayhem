@@ -6,7 +6,7 @@ AnimatorOverrideController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: _Health
+  m_Name: _HealthPickup
   m_Controller: {fileID: 9100000, guid: 27f55760e712e784791fbc24237e5b04, type: 2}
   m_Clips:
   - m_OriginalClip: {fileID: 7400000, guid: b7c974afd69cbef429d9c33f60e342b9, type: 2}

@@ -5,16 +5,20 @@ public class SpawnManager : MonoBehaviour
     [Header("Prefabs")]
     [SerializeField] private GameObject bombPrefab; // Prefab de la bomba 
     [SerializeField] private GameObject healthPrefab; // Prefab de la vida
-    [SerializeField] private GameObject stickyPrefab; // Prefab del sticky
+    [SerializeField] private GameObject gravityPrefab; // Prefab del gravity
+    [SerializeField] private GameObject stickyPrefab;
+    [SerializeField] private GameObject stringPrefab;
 
     [Header("Spawn Points")]
     [SerializeField] private Transform[] fallingSpawnPoints;
     [SerializeField] private Transform[] floatingSpawnPoints;
 
     [Header("Repeat Times")]
-    [SerializeField] private float bombRepeatTime = 10f;
-    [SerializeField] private float healthRepeatTime = 15f;
+    [SerializeField] private float bombRepeatTime = 5f;
+    [SerializeField] private float healthRepeatTime = 10f;
+    [SerializeField] private float gravityRepeatTime = 20f;
     [SerializeField] private float stickyRepeatTime = 20f;
+    [SerializeField] private float stringRepeatTime =20f;
 
     [SerializeField] private LayerMask blockedSpawnLayers; // Capa para detectar obstáculos en los puntos de spawn
     [SerializeField] private float checkRadius = 0.6f; // Radio para verificar si el punto de spawn está bloqueado
@@ -24,7 +28,9 @@ public class SpawnManager : MonoBehaviour
         // InvokeRepeating necesita llamar a metodos separados. En cada metodo se reutiliza el metodo Spawn, que se encarga de instanciar un pickup aleatorio en un punto de spawn aleatorio.
         InvokeRepeating(nameof(SpawnBomb), 2f, bombRepeatTime); // Inicia el spawn después de 2 segundos y luego se repite cada repeatTime segundos
         InvokeRepeating(nameof(SpawnHealth), 5f, healthRepeatTime); // Inicia el spawn después de 5 segundos y luego se repite cada repeatTime segundos
-        InvokeRepeating(nameof(SpawnSticky), 3f, stickyRepeatTime); // Inicia el spawn después de 3 segundos y luego se repite cada repeatTime segundos
+        InvokeRepeating(nameof(SpawnGravity), 10f, gravityRepeatTime); // Inicia el spawn después de 3 segundos y luego se repite cada repeatTime segundos
+        InvokeRepeating(nameof(SpawnSticky), 20f, stickyRepeatTime);
+        InvokeRepeating(nameof(SpawnString), 25f, stringRepeatTime);
     }
 
     private void SpawnBomb()
@@ -35,9 +41,17 @@ public class SpawnManager : MonoBehaviour
     {
         Spawn(healthPrefab, floatingSpawnPoints);
     }
+    private void SpawnGravity()
+    {
+        Spawn(gravityPrefab, floatingSpawnPoints);
+    }
     private void SpawnSticky()
     {
         Spawn(stickyPrefab, floatingSpawnPoints);
+    }
+    private void SpawnString()
+    {
+        Spawn(stringPrefab, floatingSpawnPoints);
     }
 
     void Spawn(GameObject prefab, Transform[] points)

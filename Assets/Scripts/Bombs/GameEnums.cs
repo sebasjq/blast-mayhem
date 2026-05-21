@@ -2,7 +2,8 @@
 public enum BombType
 {
     Normal,
-    Boomerang,
+    Gravity,
+    String,
     Sticky,
 }
 
@@ -11,12 +12,15 @@ public enum BombState
     Pickup,
     Thrown,
     Resting,
+    Exploded,
 }
 
 public enum PickupType
 {
-    Bomb,
     Health,
-    Boomerang,
+
+    GravityPickup,
+    StringPickup,
+    StickyPickup,
 }
 

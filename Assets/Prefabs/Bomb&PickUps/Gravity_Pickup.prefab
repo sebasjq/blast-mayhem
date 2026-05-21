@@ -150,7 +150,7 @@ GameObject:
   - component: {fileID: 8789811953524928142}
   - component: {fileID: 4548882865415403085}
   m_Layer: 6
-  m_Name: Sticky_Prefab
+  m_Name: Gravity_Pickup
   m_TagString: Pickup
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

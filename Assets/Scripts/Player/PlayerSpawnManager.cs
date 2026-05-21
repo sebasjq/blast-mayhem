@@ -39,7 +39,7 @@ public class PlayerSpawnManager : MonoBehaviour
             Rigidbody2D p1Rb = p1.GetComponent<Rigidbody2D>();
 
             p1Rb.bodyType = RigidbodyType2D.Kinematic; // Se pone el cuerpo en Kinematic para que se ejecute primero la animación de spawn y luego caiga por la gravedad
-            p1Movement.SetControls(KeyCode.A, KeyCode.D, KeyCode.W, KeyCode.X); // Se toma la funcion SetControls de la clase PlayerMovement y se le asignan las teclas correspondientes...
+            p1Movement.SetControls(KeyCode.A, KeyCode.D, KeyCode.W, KeyCode.X, KeyCode.S); // Se toma la funcion SetControls de la clase PlayerMovement y se le asignan las teclas correspondientes...
             p1Animator.SetTrigger("Spawn");
         }
 
@@ -51,7 +51,7 @@ public class PlayerSpawnManager : MonoBehaviour
 
 
             p2Rb.bodyType = RigidbodyType2D.Kinematic;
-            p2Movement.SetControls(KeyCode.LeftArrow, KeyCode.RightArrow, KeyCode.UpArrow, KeyCode.Space);
+            p2Movement.SetControls(KeyCode.LeftArrow, KeyCode.RightArrow, KeyCode.UpArrow, KeyCode.Space, KeyCode.DownArrow);
             p2Animator.SetTrigger("Spawn");
         }
     }

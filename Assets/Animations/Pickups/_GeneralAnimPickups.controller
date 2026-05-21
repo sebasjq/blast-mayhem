@@ -112,7 +112,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: _BombAnim
+  m_Name: _GeneralAnimPickups
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: Collect
