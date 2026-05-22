@@ -310,6 +310,10 @@ MonoBehaviour:
   minY: -6
   maxY: 6
   gravityExplosionTime: 4
+  explosionRadius: 1.2
+  damageLayers:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!114 &8960275825875530692
 MonoBehaviour:
   m_ObjectHideFlags: 0
