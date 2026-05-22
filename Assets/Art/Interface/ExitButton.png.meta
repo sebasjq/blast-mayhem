@@ -138,10 +138,10 @@ TextureImporter:
       name: ExitButton_0
       rect:
         serializedVersion: 2
-        x: 11
-        y: 0
-        width: 1515
-        height: 1024
+        x: 0
+        y: 318
+        width: 19
+        height: 20
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -160,10 +160,10 @@ TextureImporter:
       name: ExitButton_1
       rect:
         serializedVersion: 2
-        x: 79
-        y: 654
-        width: 19
-        height: 20
+        x: 4
+        y: 0
+        width: 1368
+        height: 424
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -182,8 +182,8 @@ TextureImporter:
       name: ExitButton_2
       rect:
         serializedVersion: 2
-        x: 94
-        y: 627
+        x: 15
+        y: 291
         width: 13
         height: 19
       alignment: 0
@@ -204,8 +204,8 @@ TextureImporter:
       name: ExitButton_3
       rect:
         serializedVersion: 2
-        x: 79
-        y: 591
+        x: 0
+        y: 255
         width: 20
         height: 20
       alignment: 0

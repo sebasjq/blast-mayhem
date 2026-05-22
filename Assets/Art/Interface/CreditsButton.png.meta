@@ -141,10 +141,10 @@ TextureImporter:
       name: CreditsButton_0
       rect:
         serializedVersion: 2
-        x: 11
-        y: 0
-        width: 1515
-        height: 1024
+        x: 0
+        y: 310
+        width: 17
+        height: 24
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -163,10 +163,10 @@ TextureImporter:
       name: CreditsButton_1
       rect:
         serializedVersion: 2
-        x: 75
-        y: 647
-        width: 15
-        height: 24
+        x: 6
+        y: 0
+        width: 1378
+        height: 425
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -185,9 +185,9 @@ TextureImporter:
       name: CreditsButton_2
       rect:
         serializedVersion: 2
-        x: 1447
-        y: 647
-        width: 13
+        x: 1374
+        y: 310
+        width: 15
         height: 22
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -207,9 +207,9 @@ TextureImporter:
       name: CreditsButton_3
       rect:
         serializedVersion: 2
-        x: 71
-        y: 601
-        width: 18
+        x: 0
+        y: 264
+        width: 16
         height: 23
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -229,9 +229,9 @@ TextureImporter:
       name: CreditsButton_4
       rect:
         serializedVersion: 2
-        x: 1447
-        y: 606
-        width: 18
+        x: 1374
+        y: 269
+        width: 16
         height: 19
       alignment: 0
       pivot: {x: 0, y: 0}
