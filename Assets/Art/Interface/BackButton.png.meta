@@ -141,10 +141,10 @@ TextureImporter:
       name: BackButton_0
       rect:
         serializedVersion: 2
-        x: 11
-        y: 0
-        width: 1515
-        height: 1024
+        x: 0
+        y: 252
+        width: 15
+        height: 17
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -163,10 +163,10 @@ TextureImporter:
       name: BackButton_1
       rect:
         serializedVersion: 2
-        x: 152
-        y: 623
-        width: 16
-        height: 16
+        x: 2
+        y: 0
+        width: 1222
+        height: 339
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -185,9 +185,9 @@ TextureImporter:
       name: BackButton_2
       rect:
         serializedVersion: 2
-        x: 1367
-        y: 623
-        width: 15
+        x: 1214
+        y: 252
+        width: 16
         height: 16
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -207,9 +207,9 @@ TextureImporter:
       name: BackButton_3
       rect:
         serializedVersion: 2
-        x: 151
-        y: 575
-        width: 18
+        x: 0
+        y: 204
+        width: 16
         height: 18
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -229,9 +229,9 @@ TextureImporter:
       name: BackButton_4
       rect:
         serializedVersion: 2
-        x: 1367
-        y: 576
-        width: 14
+        x: 1214
+        y: 205
+        width: 17
         height: 16
       alignment: 0
       pivot: {x: 0, y: 0}
