@@ -473,4 +473,11 @@ public class PlayerMovement : MonoBehaviour, IPickupReceiver
         aimLine.startColor = currentColor; // Establece el color de inicio de la línea de mira según el tiempo de carga.
         aimLine.endColor = currentColor; // Establece el color de fin de la línea de mira según el tiempo de carga.
     }
+
+    // Esta función se llama como un Animation Event desde la animación del player,
+    // esto para se genere la animación de Spawneo del personaje primero, y después se habiliten las físicas para que caiga.
+    public void EnablePhysics()
+    {
+        rb.bodyType = RigidbodyType2D.Dynamic;
+    }
 }
