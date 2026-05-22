@@ -7,11 +7,10 @@
 
 public interface IPickupReceiver
 {
-    void AddBomb();
-    void AddHealth();
-    void SetBombType(BombType bombType);
+    void AddBomb(); // Método para agregar una bomba al jugador
+    void AddHealth(); // Método para agregar salud al jugador
+    void SetBombType(BombType bombType); // Método para establecer el tipo de bomba que el jugador tiene actualmente
 }
-
 
 
 
