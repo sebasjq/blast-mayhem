@@ -150,6 +150,7 @@ GameObject:
   - component: {fileID: 4548882865415403085}
   - component: {fileID: 6072296769990044629}
   - component: {fileID: 8960275825875530692}
+  - component: {fileID: 3249135920391048552}
   m_Layer: 6
   m_Name: Bomb_Pickup
   m_TagString: Pickup
@@ -331,3 +332,18 @@ MonoBehaviour:
   m: 1
   e: 0.6
   minBounceVelocity: 0.01
+--- !u!114 &3249135920391048552
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6268137492468819005}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bf7309f24a81de479c1ed697fe201a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BombSpringMovement
+  m: 1
+  k: 18
+  b: 5
