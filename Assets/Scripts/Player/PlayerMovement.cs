@@ -38,6 +38,7 @@ public class PlayerMovement : MonoBehaviour, IPickupReceiver
     private bool isOnPlayer; // Indica si el jugador está tocando a otro jugador (para permitir salto desde la cabeza de otro jugador).
     private bool isOnSurface; // Indica si el jugador está tocando cualquier superficie (piso o jugador).
     private bool isDead = false; // Indica si el jugador ha muerto. Esto se usa para evitar que el jugador pueda moverse, saltar o lanzar
+
     private Animator animator; // Referencia al Animator del jugador. Sirve para cambiar entre Idle, Run y Jump.
     private Rigidbody2D rb; // Referencia al Rigidbody2D del jugador. Sirve para moverlo usando físicas.
 
@@ -285,7 +286,7 @@ public class PlayerMovement : MonoBehaviour, IPickupReceiver
                         return;
 
                     case BombType.String:
-                        // logica
+                        // Logica
                         return;
 
                     case BombType.Sticky:
@@ -321,7 +322,7 @@ public class PlayerMovement : MonoBehaviour, IPickupReceiver
             newBomb.SetBombType(currentBombType); // Se crea un bomba Normal por defecto
 
             Vector2 throwDirection = GetThrowDirection();
-            newBomb.Throw(throwDirection, throwSpeed);
+            newBomb.Throw(throwDirection, throwSpeed, transform);
 
             //newBomb.Throw(new Vector2(direction, 1f), 10f);
             //bombScript.Throw(Vector2.up, 10f);
@@ -493,4 +494,5 @@ public class PlayerMovement : MonoBehaviour, IPickupReceiver
     {
         rb.bodyType = RigidbodyType2D.Dynamic;
     }
+
 }

@@ -24,6 +24,9 @@ public class Bomb : MonoBehaviour
 
     [Header("Movements")]
     private BombParabolicMovement parabolicMovement; // Referencia al script BombParabolicMovement para controlar el movimiento parabólico de la bomba al ser lanzada
+    private BombSpringMovement springMovement; // Referencia al script BombSpringMovement para controlar el movimiento de resorte de la bomba al ser lanzada (si es del tipo String)
+    private Transform ownerTransform; // Referencia al transform del jugador que lanzó la bomba, para que la bomba pueda moverse hacia el jugador si es del tipo Spring
+
     [SerializeField] private Color movingColor = new Color(0.8f, 0.3f, 0.3f); // Color para indicar que la bomba está en movimiento (Thown). Se asigna desde el inspector para poder ajustarlo fácilmente
 
     [Header("World Limits")] // Limites del mundo para forzar la explosión y destrucción de la bomba si se sale de ellos
@@ -50,7 +53,9 @@ public class Bomb : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>(); // Referencia al Rigidbody2D para controlar la física de la bomba
         animator = GetComponent<Animator>(); // Referencia al Animator para controlar las animaciones de la bomba (recolección, explosión, etc.)
+
         parabolicMovement = GetComponent<BombParabolicMovement>(); // Referencia al script BombParabolicMovement para controlar el movimiento parabólico de la bomba al ser lanzada
+        springMovement = GetComponent<BombSpringMovement>(); // Referencia al script BombSpringMovement para controlar el movimiento de resorte de la bomba al ser lanzada (si es del tipo String)
 
         spriteRenderer = GetComponent<SpriteRenderer>(); // Referencia al SpriteRenderer para cambiar el color de la bomba dependiendo de su estado (por ejemplo, para indicar que está en movimiento o en reposo)
         originalColor = spriteRenderer.color; // Guarda el color original del sprite para poder volver a él cuando sea necesario (por ejemplo, después de que la bomba deje de moverse o explote)
@@ -179,12 +184,12 @@ public class Bomb : MonoBehaviour
 
     // Función para establecer el estado de reposo de la bomba
     private void SetRestingState()
-    {
-        gameObject.layer = LayerMask.NameToLayer("BombPickup"); 
-
+    { 
         currentState = BombState.Resting; // Cambia el estado de la bomba a Resting
         spriteRenderer.color = originalColor; // Cambia el color de la bomba al color original para indicar que está en estado Resting
+
         parabolicMovement.StopMovement(); // Detenemos la simulación manual
+        springMovement.StopMovement();
     }
 
     // Esta función se encarga de cambiar el tipo de bomba
@@ -212,12 +217,15 @@ public class Bomb : MonoBehaviour
     public void Collect()
     {
         animator.SetTrigger("Collect"); // Se activa la animación de recolección...
+
         parabolicMovement.StopMovement(); // Detiene la simulacion manual
+        springMovement.StopMovement();
+
         rb.bodyType = RigidbodyType2D.Kinematic; // Hacer que la bomba no sea afectada por la física
     }
 
     // Función para manejar el lanzamiento de la Bomba. Se llama desde PlayerMovement cuando el jugador lanza la bomba.
-    public void Throw(Vector2 direction, float initialSpeed)
+    public void Throw(Vector2 direction, float initialSpeed, Transform playerTransform)
     {
         gravityTimer = 0f; // Reinicia el temporizador de explosión para bombas tipo Gravity cada vez que se lanza la bomba
         collected = false; // La bomba ya no está recogida al ser lanzada
@@ -227,8 +235,20 @@ public class Bomb : MonoBehaviour
         currentState = BombState.Thrown; // Cambia a estado Thrown
         rb.bodyType = RigidbodyType2D.Dynamic;
 
+        ownerTransform = playerTransform;
+
         Vector2 initialVelocity = direction * initialSpeed; // Como direction viene normalizada en PlayerMovement, se multiplica por la velocidad inicial para obtener la velocidad real que se le va a aplicar a la bomba al ser lanzada.
-        parabolicMovement.Launch(initialVelocity); // Se llama la función Launch del script BombParabolicMovement para iniciar el movimiento parabólico de la bomba con la velocidad inicial calculada.
+
+        if (bombType == BombType.String) 
+        {
+            parabolicMovement.StopMovement(); 
+            springMovement.Launch(initialVelocity, ownerTransform);
+        }
+        else
+        {
+            springMovement.StopMovement();
+            parabolicMovement.Launch(initialVelocity); // Se llama la función Launch del script BombParabolicMovement para iniciar el movimiento parabólico de la bomba con la velocidad inicial calculada.
+        }
     }
 
     // Esta función se encarga de manejar la explosión de la bomba
@@ -240,7 +260,7 @@ public class Bomb : MonoBehaviour
         ApplyExplosionDamage(); // Aplica el daño a los jugadores dentro del radio de explosión
 
         parabolicMovement.StopMovement(); // Detiene la simulacion manual
-        // Aqui van los demas movimientos...
+        springMovement.StopMovement(); // Detiene el movimiento de resorte en caso de que sea del tipo String
 
         rb.bodyType = RigidbodyType2D.Kinematic; // Hacer que la bomba no sea afectada por la física al explotar
         spriteRenderer.color = originalColor; // Cambia el color de la bomba al color original para que la animación de explosión se vea bien
@@ -309,5 +329,6 @@ public class Bomb : MonoBehaviour
         Physics2D.IgnoreCollision(playerDetector, playerCollider, false);
         Physics2D.IgnoreCollision(groundCollider, playerCollider, false);
     }
+
 
 }
