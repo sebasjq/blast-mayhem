@@ -15,6 +15,7 @@ public class PlayerMovement : MonoBehaviour, IPickupReceiver
 
     [SerializeField] private GameObject bombPrefab; // Prefab de la bomba que el jugador va a lanzar. Se asigna desde el Inspector de Unity.
     [SerializeField] private Transform bombSpawnPoint; // Punto desde donde aparece la bomba cuando se lanza. Normalmente es un objeto hijo llamado BombSpawnPoint.
+    [SerializeField] private Transform aimLineStartPoint;
 
     [Header("Bomb Charge")] // Variables para el sistema de carga de lanzamiento de bomba
     [SerializeField] private float minThrowSpeed = 9f; // Velocidad mínima con la que se lanza la bomba si el jugador solo presiona y suelta rápidamente la tecla de bomba, sin cargar el lanzamiento.
@@ -24,7 +25,7 @@ public class PlayerMovement : MonoBehaviour, IPickupReceiver
     [Header("Aim")]
     [SerializeField] private LineRenderer aimLine; // Referencia al componente LineRenderer que se utiliza para mostrar la línea de mira mientras el jugador está cargando el lanzamiento de la bomba. Se asigna desde el Inspector de Unity.
     [SerializeField] private float aimLength = 1f; // Longitud de la linea de mira
-    [SerializeField] private float lineWidth = 0.05f; // Grosor de la línea de mira
+    [SerializeField] private float lineWidth = 0.1f; // Grosor de la línea de mira
 
     private bool chargingBomb = false; // Variable para saber si el jugador está cargando el lanzamiento de la bomba
     private float holdTime = 0f; // Variable para medir cuánto tiempo ha estado el jugador sosteniendo la tecla de bomba para cargar el lanzamiento
@@ -36,7 +37,7 @@ public class PlayerMovement : MonoBehaviour, IPickupReceiver
     private bool isGrounded; // Indica si el jugador está tocando el piso. True = está en el piso / False = está en el aire.
     private bool isOnPlayer; // Indica si el jugador está tocando a otro jugador (para permitir salto desde la cabeza de otro jugador).
     private bool isOnSurface; // Indica si el jugador está tocando cualquier superficie (piso o jugador).
-
+    private bool isDead = false; // Indica si el jugador ha muerto. Esto se usa para evitar que el jugador pueda moverse, saltar o lanzar
     private Animator animator; // Referencia al Animator del jugador. Sirve para cambiar entre Idle, Run y Jump.
     private Rigidbody2D rb; // Referencia al Rigidbody2D del jugador. Sirve para moverlo usando físicas.
 
@@ -75,6 +76,8 @@ public class PlayerMovement : MonoBehaviour, IPickupReceiver
     {
         // Variable temporal para saber si el jugador se mueve. // -1 = izquierda. / 0 = quieto. / 1 = derecha.
         float moveInput = 0f;
+
+        if (isDead) return; // Si el jugador ha muerto, no se ejecuta nada de lo que está abajo
 
         // Si se presiona la tecla de izquierda...
         if (Input.GetKey(leftKey))
@@ -226,6 +229,8 @@ public class PlayerMovement : MonoBehaviour, IPickupReceiver
     // Otros scripts, como una bomba, pueden llamar esta función.
     public void TakeDamage(int damage)
     {
+        if (isDead) return; // Si el jugador ya ha muerto, no recibe más daño ni se ejecuta nada de lo que está en esta función.
+
         // Restamos el daño recibido a la vida actual.
         currentHealth -= damage;
 
@@ -246,12 +251,15 @@ public class PlayerMovement : MonoBehaviour, IPickupReceiver
     // Función que se ejecuta cuando el jugador muere.
     private void Die()
     {
+        if (isDead) return;
+        isDead = true;
+
         Debug.Log("Player murió");
 
         animator.SetTrigger("Die");
 
         rb.linearVelocity = Vector2.zero;
-        rb.bodyType = RigidbodyType2D.Static;
+        rb.bodyType = RigidbodyType2D.Kinematic;
 
         Invoke(nameof(DisablePlayer), 0.6f);
     }
@@ -304,6 +312,9 @@ public class PlayerMovement : MonoBehaviour, IPickupReceiver
 
         GameObject bomb = Instantiate(bombPrefab, bombSpawnPoint.position, Quaternion.identity);
         Bomb newBomb = bomb.GetComponent<Bomb>();
+
+        Collider2D playerCollider = GetComponent<Collider2D>();
+        newBomb.IgnorePlayerCollision(playerCollider, 0.5f); // Hace que la bomba ignore la colisión con el jugador durante 0.5 segundos
 
         if (newBomb != null)
         {
@@ -457,7 +468,7 @@ public class PlayerMovement : MonoBehaviour, IPickupReceiver
 
         Vector2 direction = GetThrowDirection(); // Obtiene la dirección de lanzamiento basada en las teclas de dirección que el jugador está presionando. Esto determina hacia dónde se lanzará la bomba.
 
-        Vector3 start = bombSpawnPoint.position; // El punto de inicio de la línea de mira es la posición del bombSpawnPoint, que es donde aparecerá la bomba cuando se lance.
+        Vector3 start = aimLineStartPoint.position; // El punto de inicio de la línea de mira es la posición del bombSpawnPoint, que es donde aparecerá la bomba cuando se lance.
         Vector3 end = start + (Vector3)(direction * aimLength); // Esta linea basicamente, toma la dirección de lanzamiento,
                                                                 // la multiplica por aimLength para determinar la longitud de la
                                                                 // línea de mira, y suma eso a la posición de inicio para obtener el punto
@@ -468,7 +479,9 @@ public class PlayerMovement : MonoBehaviour, IPickupReceiver
 
         float t = holdTime / maxChargeTime; // Normaliza el tiempo de carga para obtener un valor entre 0 y 1, donde 0 significa que no se ha cargado nada y 1 significa que se ha alcanzado la carga máxima.
 
-        Color currentColor = Color.Lerp(Color.white, Color.red, t); // Interpola el color de la línea de mira entre blanco (sin carga) y rojo (carga máxima) según el tiempo de carga.
+        Color currentColor = Color.Lerp(
+            new Color(0f, 0.7f, 1f), // Azul celeste
+            Color.red, t); // Interpola el color de la línea de mira entre blanco (sin carga) y rojo (carga máxima) según el tiempo de carga.
 
         aimLine.startColor = currentColor; // Establece el color de inicio de la línea de mira según el tiempo de carga.
         aimLine.endColor = currentColor; // Establece el color de fin de la línea de mira según el tiempo de carga.

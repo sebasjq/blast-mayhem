@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 // Este script es para la bomba LANZADA, no para la bomba que se recoge.
 public class Bomb : MonoBehaviour
@@ -87,12 +88,15 @@ public class Bomb : MonoBehaviour
 
             if (player == null) return;
 
-            player.TakeDamage(damage);
-
             Debug.Log("Bomba golpeó al jugador. Infligiendo daño: " + damage);
 
-            Explode();
+            Explode(); // Se llama a Explode, que a su vez llama a ApplyExplosionDamage para
+                       // aplicar el daño al jugador dentro del radio de explosión.
+                       // Esto se hace para que el jugador reciba el daño incluso
+                       // si no está exactamente en el centro de la bomba, sino dentro del radio de explosión.
 
+                        // Ademas, evitamos errores al ejecutar el daño en esta función, ya que sino, cada bomba
+                        // haría el doble de daño.
             return;
         }
 
@@ -176,11 +180,11 @@ public class Bomb : MonoBehaviour
     // Función para establecer el estado de reposo de la bomba
     private void SetRestingState()
     {
+        gameObject.layer = LayerMask.NameToLayer("BombPickup"); 
+
         currentState = BombState.Resting; // Cambia el estado de la bomba a Resting
         spriteRenderer.color = originalColor; // Cambia el color de la bomba al color original para indicar que está en estado Resting
         parabolicMovement.StopMovement(); // Detenemos la simulación manual
-
-        Debug.Log("Bomba en estado Resting. Puede volver a ser recogida");
     }
 
     // Esta función se encarga de cambiar el tipo de bomba
@@ -287,5 +291,23 @@ public class Bomb : MonoBehaviour
         Gizmos.color = Color.red; // Color del gizmo para el radio de explosión
         Gizmos.DrawWireSphere(transform.position, explosionRadius); // Dibuja el circulo, con el centro en la posición de la bomba y el radio definido por explosionRadius
     }
-}
 
+    // Función para ignorar al player cuando la bomba se lanza
+    public void IgnorePlayerCollision(Collider2D playerCollider, float duration)
+    {
+        StartCoroutine(IgnoreCollisionCoroutine(playerCollider, duration)); // Inicia la corrutina para ignorar la colisión con el jugador durante un tiempo determinado
+    }
+
+    // Corrutina para ignorar la colisión con el jugador durante un tiempo determinado
+    private IEnumerator IgnoreCollisionCoroutine(Collider2D playerCollider, float duration)
+    {
+        Physics2D.IgnoreCollision(playerDetector, playerCollider, true);
+        Physics2D.IgnoreCollision(groundCollider, playerCollider, true);
+
+        yield return new WaitForSeconds(duration); // Espera durante el tiempo especificado
+
+        Physics2D.IgnoreCollision(playerDetector, playerCollider, false);
+        Physics2D.IgnoreCollision(groundCollider, playerCollider, false);
+    }
+
+}
