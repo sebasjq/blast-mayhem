@@ -1016,7 +1016,7 @@ MonoBehaviour:
   stringRepeatTime: 20
   blockedSpawnLayers:
     serializedVersion: 2
-    m_Bits: 1664
+    m_Bits: 192
   checkRadius: 1
 --- !u!1 &1402099663
 GameObject:

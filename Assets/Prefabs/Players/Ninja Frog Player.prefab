@@ -35,6 +35,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1512745910033845794}
+  - {fileID: 8657284033299694033}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &8215608809196221838
@@ -211,13 +212,14 @@ MonoBehaviour:
   originalScale: {x: 0, y: 0, z: 0}
   bombPrefab: {fileID: 6268137492468819005, guid: f0a2953d5e720c0468f955032142d510, type: 3}
   bombSpawnPoint: {fileID: 1512745910033845794}
+  aimLineStartPoint: {fileID: 8657284033299694033}
   minThrowSpeed: 9
   maxThrowSpeed: 18
   maxChargeTime: 2
-  aimLine: {fileID: 4625803366980262747}
+  aimLine: {fileID: 2081003884178567307}
   aimLength: 1
-  lineWidth: 0.05
---- !u!1 &2750692607909508555
+  lineWidth: 0.1
+--- !u!1 &1296496208478334131
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -225,38 +227,38 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1512745910033845794}
-  - component: {fileID: 4625803366980262747}
-  m_Layer: 0
-  m_Name: BombSpawnPoint
+  - component: {fileID: 8657284033299694033}
+  - component: {fileID: 2081003884178567307}
+  m_Layer: 7
+  m_Name: AimLineStartPoint
   m_TagString: Untagged
-  m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
+  m_Icon: {fileID: 419385456094870383, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1512745910033845794
+--- !u!4 &8657284033299694033
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2750692607909508555}
+  m_GameObject: {fileID: 1296496208478334131}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.423, y: 0.442, z: 0}
+  m_LocalPosition: {x: 0.862, y: -0.278, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1395421058917335685}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!120 &4625803366980262747
+--- !u!120 &2081003884178567307
 LineRenderer:
   serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2750692607909508555}
+  m_GameObject: {fileID: 1296496208478334131}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -349,8 +351,8 @@ LineRenderer:
       m_ColorSpace: -1
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
-    numCornerVertices: 0
-    numCapVertices: 0
+    numCornerVertices: 8
+    numCapVertices: 8
     alignment: 0
     textureMode: 0
     textureScale: {x: 1, y: 1}
@@ -359,3 +361,34 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!1 &2750692607909508555
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1512745910033845794}
+  m_Layer: 0
+  m_Name: BombSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1512745910033845794
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2750692607909508555}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.092, y: -0.272, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1395421058917335685}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

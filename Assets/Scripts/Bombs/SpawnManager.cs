@@ -6,21 +6,21 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private GameObject bombPrefab; // Prefab de la bomba 
     [SerializeField] private GameObject healthPrefab; // Prefab de la vida
     [SerializeField] private GameObject gravityPrefab; // Prefab del gravity
-    [SerializeField] private GameObject stickyPrefab;
-    [SerializeField] private GameObject stringPrefab;
+    [SerializeField] private GameObject stickyPrefab; // Prefab del sticky
+    [SerializeField] private GameObject stringPrefab; // Prefab del string
 
     [Header("Spawn Points")]
-    [SerializeField] private Transform[] fallingSpawnPoints;
-    [SerializeField] private Transform[] floatingSpawnPoints;
+    [SerializeField] private Transform[] fallingSpawnPoints; // Array de puntos de spawn para las bombas que caen (bombPrefab)
+    [SerializeField] private Transform[] floatingSpawnPoints; // Array de puntos de spawn para los pickups flotantes (healthPrefab, gravityPrefab, stickyPrefab, stringPrefab)
 
-    [Header("Repeat Times")]
+    [Header("Repeat Times")] // Tiempos de repetición para cada tipo de spawn
     [SerializeField] private float bombRepeatTime = 5f;
     [SerializeField] private float healthRepeatTime = 10f;
     [SerializeField] private float gravityRepeatTime = 20f;
     [SerializeField] private float stickyRepeatTime = 20f;
     [SerializeField] private float stringRepeatTime =20f;
 
-    [SerializeField] private LayerMask blockedSpawnLayers; // Capa para detectar obstáculos en los puntos de spawn
+    [SerializeField] private LayerMask blockedSpawnLayers; // LayerMask para identificar qué capas bloquean el spawn
     [SerializeField] private float checkRadius = 0.6f; // Radio para verificar si el punto de spawn está bloqueado
 
     void Start()
@@ -33,33 +33,40 @@ public class SpawnManager : MonoBehaviour
         InvokeRepeating(nameof(SpawnString), 25f, stringRepeatTime);
     }
 
+    // Cada uno de estos métodos llama al método Spawn con el prefab correspondiente y el array de puntos de spawn adecuado.
     private void SpawnBomb()
     {
-        Spawn(bombPrefab, fallingSpawnPoints);
+        Spawn(bombPrefab, fallingSpawnPoints); // Llama al método Spawn con el prefab de la bomba y los puntos de spawn para las bombas que caen
     }
+
+    // Para los pickups, se llama al método Spawn con el prefab correspondiente y los puntos de spawn para los pickups flotantes.
     private void SpawnHealth()
     {
         Spawn(healthPrefab, floatingSpawnPoints);
     }
+
     private void SpawnGravity()
     {
         Spawn(gravityPrefab, floatingSpawnPoints);
     }
+
     private void SpawnSticky()
     {
         Spawn(stickyPrefab, floatingSpawnPoints);
     }
+
     private void SpawnString()
     {
         Spawn(stringPrefab, floatingSpawnPoints);
     }
 
-    void Spawn(GameObject prefab, Transform[] points)
+    // El método Spawn se encarga de instanciar el prefab en un punto de spawn aleatorio, verificando que el punto no esté bloqueado por colisiones.
+    private void Spawn(GameObject prefab, Transform[] points)
     {
         if (prefab == null || points.Length == 0) return; // Verifica que el prefab y los puntos de spawn estén asignados
 
         int randomIndex = Random.Range(0, points.Length); // Selecciona un índice aleatorio para elegir un punto de spawn
-        Vector2 spawnPosition = points[randomIndex].position;
+        Vector2 spawnPosition = points[randomIndex].position; // Obtiene la posición del punto de spawn seleccionado
 
         bool blocked = Physics2D.OverlapCircle(
                         spawnPosition, // centro del circulo
@@ -77,17 +84,16 @@ public class SpawnManager : MonoBehaviour
                     Quaternion.identity);
     }
 
-
     private void OnDrawGizmos() // Dibuja un gizmo para visualizar el área de verificación de spawn en el editor
     {
-        Gizmos.color = Color.gray4;
+        Gizmos.color = Color.gray4; // Color para los círculos de verificación de spawn
 
-        foreach (Transform point in floatingSpawnPoints)
+        foreach (Transform point in floatingSpawnPoints) // Dibuja un círculo alrededor de cada punto de spawn para los pickups flotantes
         {
             Gizmos.DrawWireSphere(point.position, checkRadius);
         }
 
-        foreach (Transform point in fallingSpawnPoints)
+        foreach (Transform point in fallingSpawnPoints) // Dibuja un círculo alrededor de cada punto de spawn para las bombas que caen
         {
             Gizmos.DrawWireSphere(point.position, checkRadius);
         }
