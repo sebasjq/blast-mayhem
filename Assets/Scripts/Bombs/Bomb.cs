@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 // Este script es para la bomba LANZADA, no para la bomba que se recoge.
 public class Bomb : MonoBehaviour
@@ -39,6 +40,22 @@ public class Bomb : MonoBehaviour
     [SerializeField] private float gravityExplosionTime = 4f; // Tiempo en segundos antes de que la bomba de gravedad explote automáticamente
     private float gravityTimer = 0f;
 
+    [Header("Spring Pickup Settings")]
+    [SerializeField] private float springCaptureRadius = 3f;
+    [SerializeField] private float springCaptureDelay = 1f;
+    [SerializeField] private Color springCaptureColor = new Color(0.8f, 0f, 1f); // Morado
+
+    private bool springCaptureStarted = false;
+    private bool springCanBeCaptured = false;
+    private float springCaptureTimer = 0f;
+    private bool springHasLeftCaptureRadius = false;
+
+    [Header("Sticky Pickup Settings")]
+    [SerializeField] private float stickyExplosionDelay = 6f;
+
+    private bool isStuck = false;
+    private float stickyTimer = 0f;
+
     [Header("Explosion")]
     [SerializeField] private float explosionRadius = 1.2f; // Radio de la explosión de la bomba
     [SerializeField] private LayerMask damageLayers; // Capas que pueden recibir daño de la explosión
@@ -75,9 +92,23 @@ public class Bomb : MonoBehaviour
     {
         if (currentState == BombState.Thrown) // Si la bomba ha sido lanzada...
         {
-            CheckIfResting(); // Verifica si la bomba ha llegado a un estado de reposo para permitir que vuelva a ser recogida
+            if(bombType != BombType.Gravity && bombType != BombType.Spring)
+            {
+                CheckIfResting();
+            }
+
+            CheckSpringCaptureWindow();
             CheckIfOutOfBounds(); // Verifica si la bomba se ha salido de los límites del mundo para forzar su explosión y destrucción
             CheckGravityExplosionTimer(); // Verifica el temporizador de explosión para las bombas tipo Gravity y las hace explotar si el tiempo se ha cumplido
+        }
+
+        if (bombType == BombType.Sticky && isStuck)
+        {
+            stickyTimer -= Time.deltaTime;
+            if (stickyTimer <= 0f)
+            {
+                Explode();
+            }
         }
     }
 
@@ -94,6 +125,15 @@ public class Bomb : MonoBehaviour
             if (player == null) return;
 
             Debug.Log("Bomba golpeó al jugador. Infligiendo daño: " + damage);
+
+            // Si la bomba es del tipo Sticky, en lugar de explotar al golpear
+            // al jugador, se pega a él y comienza un temporizador
+            // para explotar después de un tiempo determinado
+            if (bombType == BombType.Sticky)
+            {
+                StickToTarget(player.transform);
+                return;
+            }
 
             Explode(); // Se llama a Explode, que a su vez llama a ApplyExplosionDamage para
                        // aplicar el daño al jugador dentro del radio de explosión.
@@ -133,7 +173,7 @@ public class Bomb : MonoBehaviour
         if (otherBomb != null)
         {
             Debug.Log("Detectó otra bomba");
-            if (currentState == BombState.Thrown && otherBomb.isThrown()) // Si ambas bombas están en Thrown
+            if (currentState == BombState.Thrown || otherBomb.isThrown()) // Si ambas bombas están en Thrown
             { 
                 Explode();
                 otherBomb.Explode(); // Ambas bombas explotan
@@ -143,6 +183,12 @@ public class Bomb : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Ground")) // Si la bomba colisiona con el suelo, se considera que está en el suelo (grounded).
         {
+            if (bombType == BombType.Sticky && currentState == BombState.Thrown)
+            {
+                StickToTarget(collision.transform);
+                return;
+            }
+
             isGrounded = true;
         }
     }
@@ -216,12 +262,24 @@ public class Bomb : MonoBehaviour
     // Función para manejar la recolección de la Bomba. Se llama desde PlayerMovement cuando el jugador recoge la bomba.
     public void Collect()
     {
-        animator.SetTrigger("Collect"); // Se activa la animación de recolección...
+        collected = true; // Marca la bomba como recogida para evitar múltiples activaciones
+        currentState = BombState.Exploded;
+
+        // Desactiva todos los colliders
+        if (playerDetector != null)
+            playerDetector.enabled = false;
+
+        if (groundCollider != null)
+            groundCollider.enabled = false;
 
         parabolicMovement.StopMovement(); // Detiene la simulacion manual
         springMovement.StopMovement();
 
+        rb.linearVelocity = Vector2.zero;
+        rb.angularVelocity = 0f;
         rb.bodyType = RigidbodyType2D.Kinematic; // Hacer que la bomba no sea afectada por la física
+
+        animator.SetTrigger("Collect"); // Se activa la animación de recolección...
     }
 
     // Función para manejar el lanzamiento de la Bomba. Se llama desde PlayerMovement cuando el jugador lanza la bomba.
@@ -230,6 +288,18 @@ public class Bomb : MonoBehaviour
         gravityTimer = 0f; // Reinicia el temporizador de explosión para bombas tipo Gravity cada vez que se lanza la bomba
         collected = false; // La bomba ya no está recogida al ser lanzada
         isGrounded = false; // La bomba no está en el suelo al ser lanzada
+
+        // Se reinician las variables relacionadas con la captura de las bombas
+        // tipo Spring para que cada vez que se lanza una bomba de este tipo,
+        // tenga la misma oportunidad de ser capturada por el jugador.
+        springCaptureStarted = false;
+        springCanBeCaptured = false;
+        springCaptureTimer = 0f;
+        springHasLeftCaptureRadius = false;
+
+        isStuck = false; // Reinicia el estado de pegajosidad para las bombas tipo Sticky cada vez que se lanza la bomba
+        stickyTimer = 0f;
+
         spriteRenderer.color = movingColor; // Cambia el color de la bomba para indicar que está en estado Thrown
 
         currentState = BombState.Thrown; // Cambia a estado Thrown
@@ -239,7 +309,7 @@ public class Bomb : MonoBehaviour
 
         Vector2 initialVelocity = direction * initialSpeed; // Como direction viene normalizada en PlayerMovement, se multiplica por la velocidad inicial para obtener la velocidad real que se le va a aplicar a la bomba al ser lanzada.
 
-        if (bombType == BombType.String) 
+        if (bombType == BombType.Spring) 
         {
             parabolicMovement.StopMovement(); 
             springMovement.Launch(initialVelocity, ownerTransform);
@@ -254,9 +324,25 @@ public class Bomb : MonoBehaviour
     // Esta función se encarga de manejar la explosión de la bomba
     public void Explode()
     {
+        if (currentState == BombState.Exploded) return; // Si la bomba ya está en estado Exploded, no hace nada para evitar que se active la explosión varias veces o que se pueda recoger después de explotar.
         Debug.Log("Bomba explotó");
 
         currentState = BombState.Exploded; // Cambia el estado a Exploded para evitar que se vuelva a activar la explosión o se pueda recoger
+        isStuck = false;
+        stickyTimer = 0f;
+
+        Collider2D[] colliders = GetComponentsInChildren<Collider2D>(); // Obtiene todos los colliders hijos de
+                                                                        // la bomba (incluyendo el collider principal
+                                                                        // y cualquier collider adicional que pueda
+                                                                        // tener para el daño o la explosión)
+
+        foreach (Collider2D col in colliders) // Se itera sobre cada collider encontrado en la bomba
+        {
+            col.enabled = false; // Se desactivan los colliders para evitar que sigan detectando
+                                 // colisiones después de que la bomba explote, lo que podría
+                                 // causar errores como aplicar daño varias veces o activar la explosión varias veces.
+        }
+
         ApplyExplosionDamage(); // Aplica el daño a los jugadores dentro del radio de explosión
 
         parabolicMovement.StopMovement(); // Detiene la simulacion manual
@@ -276,12 +362,17 @@ public class Bomb : MonoBehaviour
             damageLayers // Desde el inspector se pone Player como damageLayer para que solo detecte a los jugadores y no a otros objetos como el suelo o otras bombas 
         );
 
+        HashSet<PlayerMovement> damagedPlayers = new HashSet<PlayerMovement>(); // Se crea un HashSet para almacenar los jugadores que ya han recibido daño y evitar que reciban daño múltiple si tienen varios colliders o si hay varias bombas explotando al mismo tiempo
+
         foreach (Collider2D hit in hits) // Se itera sobre cada collider encontrado dentro del radio de explosión
         {
-            PlayerMovement player = hit.GetComponent<PlayerMovement>(); // Se intenta obtener el componente PlayerMovement del collider para verificar si es un jugador
+            PlayerMovement player = hit.GetComponentInParent<PlayerMovement>(); // Se intenta obtener el componente PlayerMovement del collider encontrado. Se usa GetComponentInParent
+                                                                                // para cubrir el caso de que el collider no esté directamente en el objeto del jugador,
+                                                                                // sino en un hijo (por ejemplo, si el jugador tiene colliders separados para la cabeza, el cuerpo, etc.)
 
-            if (player != null) // Si es un jugador...
+            if (player != null && !damagedPlayers.Contains(player)) // Si es un jugador y no ha sido dañado aún...
             {
+                damagedPlayers.Add(player); // Se agrega el jugador al HashSet para marcarlo como dañado y evitar que reciba daño múltiple
                 player.TakeDamage(damage); // Aplica daño
             }
         }
@@ -330,5 +421,105 @@ public class Bomb : MonoBehaviour
         Physics2D.IgnoreCollision(groundCollider, playerCollider, false);
     }
 
+    private void CheckSpringCaptureWindow()
+    {
+        if (bombType != BombType.Spring) return;
+        if (currentState != BombState.Thrown) return;
+        if (ownerTransform == null) return;
 
+        float distanceToPlayer = Vector2.Distance(transform.position, ownerTransform.position);
+
+        // Primero debe alejarse del jugador.
+        if (!springHasLeftCaptureRadius)
+        {
+            if (distanceToPlayer > springCaptureRadius)
+            {
+                springHasLeftCaptureRadius = true;
+                Debug.Log("La Spring ya salió del radio de captura");
+            }
+
+            return;
+        }
+
+        // Solo cuando ya se alejó y vuelve a entrar al radio, abre la ventana.
+        if (!springCaptureStarted && distanceToPlayer <= springCaptureRadius)
+        {
+            springCaptureStarted = true;
+            springCanBeCaptured = true;
+            springCaptureTimer = springCaptureDelay;
+
+            spriteRenderer.color = springCaptureColor;
+            Debug.Log("Ventana de captura abierta");
+        }
+
+        if (springCanBeCaptured && distanceToPlayer > springCaptureRadius)
+        {
+            springCanBeCaptured = false;
+            springCaptureStarted = false;
+            springCaptureTimer = 0f;
+
+            spriteRenderer.color = movingColor;
+            Debug.Log("La bomba salió del radio, ventana cerrada");
+
+            return;
+        }
+
+
+        if (springCanBeCaptured)
+        {
+            springCaptureTimer -= Time.deltaTime;
+
+            if (springCaptureTimer <= 0f)
+            {
+                springCanBeCaptured = false;
+                springCaptureStarted = false;
+
+                spriteRenderer.color = movingColor;
+
+                Debug.Log("Fallaste la captura");
+                Explode();
+            }
+        }
+    }
+
+    public bool TryCaptureSpringBomb()
+    {
+        if (bombType != BombType.Spring) return false;
+        if (currentState != BombState.Thrown) return false;
+        if (!springCanBeCaptured) return false;
+
+        spriteRenderer.color = originalColor;
+
+        springCanBeCaptured = false;
+        springCaptureStarted = false;
+
+        parabolicMovement.StopMovement();
+        springMovement.StopMovement();
+
+        Collect();
+
+        return true;
+    }
+
+    private void StickToTarget(Transform target)
+    {
+        if (isStuck) return; // Si ya está pegada a algo, no hace nada
+
+        isStuck = true; // Marca la bomba como pegada para evitar que esta función se ejecute varias veces
+        stickyTimer = stickyExplosionDelay;
+
+        parabolicMovement.StopMovement();
+        springMovement.StopMovement();
+
+        rb.linearVelocity = Vector2.zero;
+        rb.angularVelocity = 0f;
+        rb.bodyType = RigidbodyType2D.Kinematic;
+        rb.freezeRotation = true;
+
+        transform.rotation = Quaternion.identity; // Resetea la rotación de la bomba
+        transform.SetParent(target, true);
+
+        Debug.Log("Sticky pegada");
+    }
 }
+

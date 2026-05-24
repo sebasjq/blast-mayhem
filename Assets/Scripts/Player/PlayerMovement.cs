@@ -145,9 +145,25 @@ public class PlayerMovement : MonoBehaviour, IPickupReceiver
         }
 
         // Si se presiona la tecla de bomba y hay una bomba especial activa que ya fue lanzada y es del tipo Gravity, entonces en lugar de lanzar otra bomba, se activa o desactiva la gravedad de esa bomba.
-        if (Input.GetKeyDown(bombKey) && activeSpecialBomb != null && activeSpecialBomb.isThrown() && activeSpecialBomb.GetBombType() == BombType.Gravity)
+        if (Input.GetKeyDown(bombKey)
+            && activeSpecialBomb != null
+            && activeSpecialBomb.isThrown())
         {
-            activeSpecialBomb.ToggleGravity(); // Activa o desactiva la gravedad de la bomba Gravity ya lanzada.
+            if (activeSpecialBomb.GetBombType() == BombType.Gravity)
+            {
+                activeSpecialBomb.ToggleGravity();
+            }
+
+            else if (activeSpecialBomb.GetBombType() == BombType.Spring)
+            {
+                if (activeSpecialBomb.TryCaptureSpringBomb())
+                {
+                    AddBomb();
+                    currentBombType = BombType.Spring;
+                    activeSpecialBomb = null;
+                }
+            }
+
             return;
         }
 
@@ -274,32 +290,6 @@ public class PlayerMovement : MonoBehaviour, IPickupReceiver
     // Función encargada de lanzar la bomba.
     public void ThrowBomb(float throwSpeed)
     {
-
-        if (activeSpecialBomb != null)
-        {
-            if (activeSpecialBomb.isThrown())
-            {
-                switch (activeSpecialBomb.GetBombType())
-                {
-                    case BombType.Gravity:
-                        activeSpecialBomb.ToggleGravity();
-                        return;
-
-                    case BombType.String:
-                        // Logica
-                        return;
-
-                    case BombType.Sticky:
-                        //logica
-                        return;
-
-                }
-
-                // Si no esta lanzada, se borra la referencia la bomba
-                activeSpecialBomb = null;
-            }
-        }
-
         if (bombInventory <= 0)
         {
             Debug.Log("No hay bombas para lanzar");
@@ -327,7 +317,7 @@ public class PlayerMovement : MonoBehaviour, IPickupReceiver
             //newBomb.Throw(new Vector2(direction, 1f), 10f);
             //bombScript.Throw(Vector2.up, 10f);
 
-            if (currentBombType != BombType.Normal)
+            if (currentBombType == BombType.Gravity || currentBombType == BombType.Spring)
             {
                 activeSpecialBomb = newBomb; // Guarda la referencia de la bomba especial creada.
                                              // Así, cuando el jugador vuelva a presionar la tecla,
