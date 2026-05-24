@@ -38,6 +38,7 @@ public class PlayerMovement : MonoBehaviour, IPickupReceiver
     private bool isOnPlayer; // Indica si el jugador está tocando a otro jugador (para permitir salto desde la cabeza de otro jugador).
     private bool isOnSurface; // Indica si el jugador está tocando cualquier superficie (piso o jugador).
     private bool isDead = false; // Indica si el jugador ha muerto. Esto se usa para evitar que el jugador pueda moverse, saltar o lanzar
+    private bool canMove = false;
 
     private Animator animator; // Referencia al Animator del jugador. Sirve para cambiar entre Idle, Run y Jump.
     private Rigidbody2D rb; // Referencia al Rigidbody2D del jugador. Sirve para moverlo usando físicas.
@@ -78,7 +79,7 @@ public class PlayerMovement : MonoBehaviour, IPickupReceiver
         // Variable temporal para saber si el jugador se mueve. // -1 = izquierda. / 0 = quieto. / 1 = derecha.
         float moveInput = 0f;
 
-        if (isDead) return; // Si el jugador ha muerto, no se ejecuta nada de lo que está abajo
+        if (isDead || !canMove) return; // Si el jugador ha muerto o no puede moverse, no se ejecuta nada de lo que está abajo
 
         // Si se presiona la tecla de izquierda...
         if (Input.GetKey(leftKey))
@@ -168,7 +169,7 @@ public class PlayerMovement : MonoBehaviour, IPickupReceiver
         }
 
         // Si el jugador tiene bombas en su inventario o tiene una bomba especial activa, puede intentar lanzar una bomba.
-        if (bombInventory > 0 || activeSpecialBomb != null)
+        if (bombInventory > 0)
         {
             if (Input.GetKeyDown(bombKey)) // Si se presiona la tecla de bomba, se inicia el proceso de carga del lanzamiento de la bomba
             {
@@ -489,6 +490,7 @@ public class PlayerMovement : MonoBehaviour, IPickupReceiver
     public void EnablePhysics()
     {
         rb.bodyType = RigidbodyType2D.Dynamic;
+        canMove = true;
     }
 
 }
