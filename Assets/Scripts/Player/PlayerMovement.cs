@@ -8,7 +8,7 @@ public class PlayerMovement : MonoBehaviour, IPickupReceiver
     [SerializeField] private float moveSpeed = 5f; // Velocidad con la que se mueve el jugador hacia la izquierda o derecha.
     [SerializeField] private float jumpForce = 10f; // Fuerza con la que salta el jugador.
     [SerializeField] private float bombInventory = 0;
-    [SerializeField] private int maxHealth = 3; // Vida máxima del jugador.
+    [SerializeField] private int maxHealth = 10; // Vida máxima del jugador.
     [SerializeField] private int maxJumps = 2; // Cantidad máxima de saltos permitidos. 2 significa salto normal + doble salto.
 
     [SerializeField] private Vector3 originalScale; // Guarda la escala original del personaje. Esto sirve para voltearlo a izquierda/derecha sin cambiarle el tamaño.
@@ -350,8 +350,14 @@ public class PlayerMovement : MonoBehaviour, IPickupReceiver
     // Aumentar la vida del jugador al recoger un pickup de salud
     public void AddHealth()
     {
-        Debug.Log("Salud aumentada");
+        if (currentHealth >= maxHealth)
+        {
+            Debug.Log("Vida ya está al máximo");
+            return;
+        }
+
         currentHealth += 1;
+        Debug.Log("Salud aumentada. Vida actual: " + currentHealth);
     }
 
     // Método para agregar el tipo de bomba Boomerang
