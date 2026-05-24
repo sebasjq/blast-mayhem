@@ -1,7 +1,8 @@
+using System.Collections;
 using UnityEngine;
-using UnityEngine.UI; // For UI elements like Image
-using TMPro; // For TextMeshPro elements
-using UnityEngine.SceneManagement; // For scene management
+using UnityEngine.UI;
+using TMPro;
+using UnityEngine.SceneManagement;
 
 public class CharacterSelectionManager : MonoBehaviour
 {
@@ -21,78 +22,111 @@ public class CharacterSelectionManager : MonoBehaviour
     [Header("Scene")]
     [SerializeField] private string gameSceneName = "02_BombTest";
 
+    [Header("Sistema Pantalla de Carga")]
+    [SerializeField] private GameObject fondoDeCarga;
+    [SerializeField] private GameObject panelControles;
+    [SerializeField] private GameObject panelBombas;
+    [SerializeField] private Slider barraDeCarga;
+    [SerializeField] private float tiempoTotalDeLectura = 6f;
+
     private int player1Index = 0;
     private int player2Index = 1;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         UpdateUI(); // Actualiza la UI para mostrar los personajes iniciales seleccionados
+
+        // Por seguridad, aseguramos que el panel de carga empiece apagado al iniciar la escena
+        if (fondoDeCarga != null) fondoDeCarga.SetActive(false);
     }
-    
+
     public void NextPlayer1()
     {
-        Debug.Log("Click derecha Player 1");
-
-        // Incrementa el índice de Player 1 y lo envuelve alrededor del número de personajes disponibles
-        player1Index = (player1Index + 1) % playerPrefabs.Length; // El % asegura que vuelva al inicio del array después de llegar al final
-        
+        player1Index = (player1Index + 1) % playerPrefabs.Length;
         UpdateUI();
     }
 
     public void PreviousPlayer1()
     {
-        Debug.Log("Click izquierda Player 1");
-
-        // Decrementa el índice de Player 1 y lo envuelve alrededor del número de personajes disponibles
         player1Index--;
-
-        if(player1Index < 0)
-            player1Index = playerPrefabs.Length - 1;
-
+        if (player1Index < 0) player1Index = playerPrefabs.Length - 1;
         UpdateUI();
     }
 
     public void NextPlayer2()
     {
-        Debug.Log("Click derecha Player 2");
-
-        // Incrementa el índice de Player 1 y lo envuelve alrededor del número de personajes disponibles
-        player2Index = (player2Index + 1) % playerPrefabs.Length; // El % asegura que vuelva al inicio del array después de llegar al final
-        
+        player2Index = (player2Index + 1) % playerPrefabs.Length;
         UpdateUI();
     }
 
     public void PreviousPlayer2()
     {
-        Debug.Log("Click izquierda Player 2");
-
-        // Decrementa el índice de Player 1 y lo envuelve alrededor del número de personajes disponibles
         player2Index--;
-
-        if (player2Index < 0)
-            player2Index = playerPrefabs.Length - 1;
-
+        if (player2Index < 0) player2Index = playerPrefabs.Length - 1;
         UpdateUI();
     }
 
+    // ESTA FUNCIÓN LA TIENE TU BOTÓN "INICIAR" (EL DE PIXEL ART)
     public void StartGame()
     {
-        PlayerSelectionData.player1Prefab = playerPrefabs[player1Index]; // Asigna el prefab del personaje seleccionado para Player 1
-        PlayerSelectionData.player2Prefab = playerPrefabs[player2Index]; // Asigna el prefab del personaje seleccionado para Player 2
+        Debug.Log("¡Guardando personajes y activando pantalla de carga!");
 
-        SceneManager.LoadScene(gameSceneName); // Carga la escena del juego
+        // 1. PRIMERO: Guardamos los personajes seleccionados para que aparezcan en el juego
+        PlayerSelectionData.player1Prefab = playerPrefabs[player1Index];
+        PlayerSelectionData.player2Prefab = playerPrefabs[player2Index];
+
+        // 2. SEGUNDO: Encendemos los paneles de tutoriales en la cara del jugador
+        if (fondoDeCarga != null) fondoDeCarga.SetActive(true);
+        if (panelControles != null) panelControles.SetActive(true);
+        if (panelBombas != null) panelBombas.SetActive(false);
+
+        // 3. TERCERO: Reseteamos la barrita visual
+        if (barraDeCarga != null) barraDeCarga.value = 0f;
+
+        // 4. CUARTO: Iniciamos la carga asíncrona en segundo plano del nivel "02_BombTest"
+        StartCoroutine(CargarJuegoYActualizarBarra());
+    }
+
+    IEnumerator CargarJuegoYActualizarBarra()
+    {
+        // Ponemos a Unity a cargar la escena real de pruebas en la RAM
+        AsyncOperation cargaFondo = SceneManager.LoadSceneAsync(gameSceneName);
+        cargaFondo.allowSceneActivation = false; // No dejes entrar al jugador todavía
+
+        float tiempoPasado = 0f;
+
+        // Bucle automático mientras dure el tiempo de lectura o el juego termine de cargar
+        while (tiempoPasado < tiempoTotalDeLectura || cargaFondo.progress < 0.9f)
+        {
+            tiempoPasado += Time.deltaTime;
+
+            // Calculamos el porcentaje visual (de 0 a 1)
+            float progresoVisual = Mathf.Clamp01(tiempoPasado / tiempoTotalDeLectura);
+            if (barraDeCarga != null) barraDeCarga.value = progresoVisual;
+
+            // Si pasa de la mitad (50%), ocultamos controles y mostramos las bombas
+            if (progresoVisual >= 0.5f && panelControles.activeSelf)
+            {
+                panelControles.SetActive(false);
+                panelBombas.SetActive(true);
+            }
+
+            yield return null; // Espera al siguiente frame
+        }
+
+        // Aseguramos que se llene al 100% la barra
+        if (barraDeCarga != null) barraDeCarga.value = 1f;
+
+        // ¡Misión cumplida! Viajamos a la escena de juego con los personajes cargados
+        cargaFondo.allowSceneActivation = true;
     }
 
     private void UpdateUI()
     {
-        Debug.Log("UpdateUI ejecutado");
+        player1Image.sprite = playerSprites[player1Index];
+        player1NameText.text = playerNames[player1Index];
 
-        // Update Player 1 UI
-        player1Image.sprite = playerSprites[player1Index]; // Pone el sprite del personaje seleccionado en el Image de Player 1
-        player1NameText.text = playerNames[player1Index]; // Pone el nombre del personaje seleccionado en el Text de Player 1
-
-        player2Image.sprite = playerSprites[player2Index]; // Pone el sprite del personaje seleccionado en el Image de Player 2
-        player2NameText.text = playerNames[player2Index]; // Pone el nombre del personaje seleccionado en el Text de Player 2
+        player2Image.sprite = playerSprites[player2Index];
+        player2NameText.text = playerNames[player2Index];
     }
 }
