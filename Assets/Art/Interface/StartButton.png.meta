@@ -5,12 +5,6 @@ TextureImporter:
   - first:
       213: -2834816866031520189
     second: StartButton_0
-  - first:
-      213: 144607954711566811
-    second: StartButton_1
-  - first:
-      213: 1409554443580534697
-    second: StartButton_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -135,10 +129,10 @@ TextureImporter:
       name: StartButton_0
       rect:
         serializedVersion: 2
-        x: 11
+        x: 7
         y: 0
-        width: 1515
-        height: 1024
+        width: 1142
+        height: 454
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -149,50 +143,6 @@ TextureImporter:
       bones: []
       spriteID: 346b7e07415b8a8d0800000000000000
       internalID: -2834816866031520189
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: StartButton_1
-      rect:
-        serializedVersion: 2
-        x: 83
-        y: 735
-        width: 6
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: bd9574c2b20c10200800000000000000
-      internalID: 144607954711566811
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: StartButton_2
-      rect:
-        serializedVersion: 2
-        x: 82
-        y: 622
-        width: 6
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 9afe03d5c4ebf8310800000000000000
-      internalID: 1409554443580534697
       vertices: []
       indices: 
       edges: []
@@ -212,8 +162,6 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       StartButton_0: -2834816866031520189
-      StartButton_1: 144607954711566811
-      StartButton_2: 1409554443580534697
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
