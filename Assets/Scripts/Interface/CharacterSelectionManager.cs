@@ -92,7 +92,7 @@ public class CharacterSelectionManager : MonoBehaviour
         player1Image.sprite = playerSprites[player1Index]; // Pone el sprite del personaje seleccionado en el Image de Player 1
         player1NameText.text = playerNames[player1Index]; // Pone el nombre del personaje seleccionado en el Text de Player 1
 
-        player2Image.sprite = playerSprites[player2Index];
-        player2NameText.text = playerNames[player2Index];
+        player2Image.sprite = playerSprites[player2Index]; // Pone el sprite del personaje seleccionado en el Image de Player 2
+        player2NameText.text = playerNames[player2Index]; // Pone el nombre del personaje seleccionado en el Text de Player 2
     }
 }
