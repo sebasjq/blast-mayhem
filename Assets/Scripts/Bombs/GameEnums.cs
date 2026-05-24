@@ -8,7 +8,7 @@ public enum BombType // Define los diferentes tipos de bombas que existen en el 
 {
     Normal,
     Gravity,
-    String,
+    Spring,
     Sticky,
 }
 

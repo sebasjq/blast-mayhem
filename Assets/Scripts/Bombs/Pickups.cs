@@ -59,7 +59,7 @@ public class Pickups : MonoBehaviour
 
                 case PickupType.StringPickup:
                     Debug.Log("String recogido");
-                    receiver.SetBombType(BombType.String);
+                    receiver.SetBombType(BombType.Spring);
                     break;
 
                 case PickupType.StickyPickup:
