@@ -280,6 +280,12 @@ public class PlayerMovement : MonoBehaviour, IPickupReceiver
         if (isDead) return;
         isDead = true;
 
+        // Llamada ultra simple: Si existe el menú, enciéndelo.
+        if (GameOverMenu.Instance != null)
+        {
+            GameOverMenu.Instance.ActivarMenu();
+        }
+
         Debug.Log("Player murió");
 
         animator.SetTrigger("Die");
@@ -381,7 +387,7 @@ public class PlayerMovement : MonoBehaviour, IPickupReceiver
     }
 
     // Funcion para configurar las teclas de control del jugador. Es llamada por el PlayerSpawnManager al crear el jugador, pasando las teclas correspondientes para cada jugador.
-    public void SetControls(KeyCode left, KeyCode right, KeyCode jump, KeyCode bomb, KeyCode down, HealthBarSlider miBarra)
+    public void SetControls(KeyCode left, KeyCode right, KeyCode jump, KeyCode bomb, KeyCode down, HealthBarSlider miBarra, string nombre)
     {
         leftKey = left;
         rightKey = right;

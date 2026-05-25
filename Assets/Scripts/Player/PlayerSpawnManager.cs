@@ -47,7 +47,7 @@ public class PlayerSpawnManager : MonoBehaviour
             p1Rb.bodyType = RigidbodyType2D.Kinematic;
 
             // Al final de los controles, le pasamos la barraJugador1
-            p1Movement.SetControls(KeyCode.A, KeyCode.D, KeyCode.W, KeyCode.X, KeyCode.S, barraJugador1);
+            p1Movement.SetControls(KeyCode.A, KeyCode.D, KeyCode.W, KeyCode.X, KeyCode.S, barraJugador1, "Jugador 1");
 
             p1Animator.SetTrigger("Spawn");
         }
@@ -61,7 +61,7 @@ public class PlayerSpawnManager : MonoBehaviour
             p2Rb.bodyType = RigidbodyType2D.Kinematic;
 
             // Al final de los controles, le pasamos la barraJugador2
-            p2Movement.SetControls(KeyCode.LeftArrow, KeyCode.RightArrow, KeyCode.UpArrow, KeyCode.Space, KeyCode.DownArrow, barraJugador2);
+            p2Movement.SetControls(KeyCode.LeftArrow, KeyCode.RightArrow, KeyCode.UpArrow, KeyCode.Space, KeyCode.DownArrow, barraJugador2, "Jugador 2");
 
             p2Animator.SetTrigger("Spawn");
             if (retratoP1 != null && PlayerSelectionData.player1Sprite != null)
