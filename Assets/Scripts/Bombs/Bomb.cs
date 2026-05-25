@@ -421,17 +421,27 @@ public class Bomb : MonoBehaviour
         Physics2D.IgnoreCollision(groundCollider, playerCollider, false);
     }
 
+    // Función para verificar la ventana de captura de las bombas tipo Spring. La bomba
+    // tipo Spring tiene una mecánica especial que permite al jugador capturarla
+    // y devolverla al lanzarla, pero solo si la bomba se aleja del jugador y luego
+    // vuelve a entrar en un radio definido alrededor del jugador, lo que abre una
+    // ventana de captura durante un tiempo limitado.
     private void CheckSpringCaptureWindow()
     {
-        if (bombType != BombType.Spring) return;
-        if (currentState != BombState.Thrown) return;
-        if (ownerTransform == null) return;
+        if (bombType != BombType.Spring) return; // Solo aplica esta mecánica si la bomba es del tipo Spring
+        if (currentState != BombState.Thrown) return; // Solo aplica esta mecánica si la bomba está en estado Thrown
+        if (ownerTransform == null) return; // Si no se ha asignado el transform del jugador que lanzó la bomba,
+                                            // no hace nada para evitar errores.
 
+        // Se calcula la distancia entre la bomba y el jugador
         float distanceToPlayer = Vector2.Distance(transform.position, ownerTransform.position);
 
-        // Primero debe alejarse del jugador.
+        // Primero, se verifica si la bomba ha salido del radio de captura al menos una vez desde que fue
+        // lanzada. Esto es para asegurarse de que el jugador no pueda capturar la bomba inmediatamente
+        // después de lanzarla sin darle la oportunidad de alejarse.
         if (!springHasLeftCaptureRadius)
         {
+            // Si la bomba aún no ha salido del radio de captura, se verifica si la distancia actual es mayor que el radio de captura.
             if (distanceToPlayer > springCaptureRadius)
             {
                 springHasLeftCaptureRadius = true;
@@ -444,14 +454,17 @@ public class Bomb : MonoBehaviour
         // Solo cuando ya se alejó y vuelve a entrar al radio, abre la ventana.
         if (!springCaptureStarted && distanceToPlayer <= springCaptureRadius)
         {
-            springCaptureStarted = true;
-            springCanBeCaptured = true;
-            springCaptureTimer = springCaptureDelay;
+            springCaptureStarted = true; // Marca que la ventana de captura ha comenzado para evitar que esta condición se cumpla varias veces y reinicie el temporizador cada vez que la bomba entre al radio de captura
+            springCanBeCaptured = true; // Permite que la bomba pueda ser capturada por el jugador al llamar a TryCaptureSpringBomb desde PlayerMovement
+            springCaptureTimer = springCaptureDelay; // Establece el temporizador de captura con el tiempo definido para la ventana de captura
 
-            spriteRenderer.color = springCaptureColor;
+            spriteRenderer.color = springCaptureColor; // Cambia el color de la bomba para indicar que está en la ventana de captura y puede ser capturada por el jugador
             Debug.Log("Ventana de captura abierta");
         }
 
+        // Si la bomba sale del radio de captura mientras la ventana de captura está abierta, se cierra la ventana y
+        // se reinician las variables relacionadas para que el jugador tenga que volver a alejarse y acercarse
+        // para abrir una nueva ventana de captura.
         if (springCanBeCaptured && distanceToPlayer > springCaptureRadius)
         {
             springCanBeCaptured = false;
@@ -464,9 +477,12 @@ public class Bomb : MonoBehaviour
             return;
         }
 
-
+        // Si la ventana de captura está abierta, se reduce el temporizador de captura con el tiempo transcurrido desde el último frame
         if (springCanBeCaptured)
         {
+            // Si el temporizador de captura llega a cero, se cierra la ventana de captura y se reinician
+            // las variables relacionadas para que el jugador tenga que volver a alejarse y
+            // acercarse para abrir una nueva ventana de captura.
             springCaptureTimer -= Time.deltaTime;
 
             if (springCaptureTimer <= 0f)
@@ -482,8 +498,14 @@ public class Bomb : MonoBehaviour
         }
     }
 
+    // Función para intentar capturar la bomba tipo Spring. Se llama desde PlayerMovement
+    // cuando el jugador intenta capturar la bomba al lanzar otra bomba tipo
+    // Spring mientras la ventana de captura está abierta.
     public bool TryCaptureSpringBomb()
     {
+        // Solo permite capturar la bomba si es del tipo Spring, está en estado Thrown y
+        // la ventana de captura está abierta (springCanBeCaptured es true).
+        // Si alguna de estas condiciones no se cumple, devuelve false para indicar que no se pudo capturar la bomba.
         if (bombType != BombType.Spring) return false;
         if (currentState != BombState.Thrown) return false;
         if (!springCanBeCaptured) return false;
