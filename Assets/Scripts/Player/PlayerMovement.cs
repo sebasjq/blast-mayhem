@@ -27,6 +27,9 @@ public class PlayerMovement : MonoBehaviour, IPickupReceiver
     [SerializeField] private float aimLength = 1f; // Longitud de la linea de mira
     [SerializeField] private float lineWidth = 0.1f; // Grosor de la línea de mira
 
+    [Header("UI")]
+    [SerializeField] private HealthBarSlider barraDeVida; // Referencia a la barra de vida visual
+
     private bool chargingBomb = false; // Variable para saber si el jugador está cargando el lanzamiento de la bomba
     private float holdTime = 0f; // Variable para medir cuánto tiempo ha estado el jugador sosteniendo la tecla de bomba para cargar el lanzamiento
 
@@ -255,6 +258,11 @@ public class PlayerMovement : MonoBehaviour, IPickupReceiver
         // Mostramos la vida actual en la consola.
         Debug.Log("Vida actual: " + currentHealth);
 
+        // Se actualiza la barra visual
+        if (barraDeVida != null)
+        {
+            barraDeVida.CambiarVidaActual(currentHealth);
+        }
         // Si la vida llega a 0 o menos...
         if (currentHealth <= 0)
         {
@@ -359,6 +367,11 @@ public class PlayerMovement : MonoBehaviour, IPickupReceiver
 
         currentHealth += 1;
         Debug.Log("Salud aumentada. Vida actual: " + currentHealth);
+
+        if (barraDeVida != null)
+        {
+            barraDeVida.CambiarVidaActual(currentHealth);
+        }
     }
 
     // Método para agregar el tipo de bomba Boomerang
@@ -368,13 +381,21 @@ public class PlayerMovement : MonoBehaviour, IPickupReceiver
     }
 
     // Funcion para configurar las teclas de control del jugador. Es llamada por el PlayerSpawnManager al crear el jugador, pasando las teclas correspondientes para cada jugador.
-    public void SetControls(KeyCode left, KeyCode right, KeyCode jump, KeyCode bomb, KeyCode down)
+    public void SetControls(KeyCode left, KeyCode right, KeyCode jump, KeyCode bomb, KeyCode down, HealthBarSlider miBarra)
     {
         leftKey = left;
         rightKey = right;
         jumpKey = jump;
         bombKey = bomb;
         downKey = down;
+
+        barraDeVida = miBarra; // <-- El manager le entrega su barra asignada
+
+        // Inicializamos la barra de inmediato con la vida máxima de este jugador
+        if (barraDeVida != null)
+        {
+            barraDeVida.InicializarBarraDeVida(maxHealth);
+        }
     }
 
     // Esta función obtiene la dirección de lanzamiento de la bomba según las teclas de dirección que el jugador esté presionando.

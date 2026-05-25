@@ -66,7 +66,6 @@ public class CharacterSelectionManager : MonoBehaviour
         UpdateUI();
     }
 
-    // ESTA FUNCIÓN LA TIENE TU BOTÓN "INICIAR" (EL DE PIXEL ART)
     public void StartGame()
     {
         Debug.Log("¡Guardando personajes y activando pantalla de carga!");
@@ -74,6 +73,9 @@ public class CharacterSelectionManager : MonoBehaviour
         // 1. PRIMERO: Guardamos los personajes seleccionados para que aparezcan en el juego
         PlayerSelectionData.player1Prefab = playerPrefabs[player1Index];
         PlayerSelectionData.player2Prefab = playerPrefabs[player2Index];
+
+        PlayerSelectionData.player1Sprite = playerSprites[player1Index];
+        PlayerSelectionData.player2Sprite = playerSprites[player2Index];
 
         // 2. SEGUNDO: Encendemos los paneles de tutoriales en la cara del jugador
         if (fondoDeCarga != null) fondoDeCarga.SetActive(true);
@@ -91,7 +93,7 @@ public class CharacterSelectionManager : MonoBehaviour
     {
         // Ponemos a Unity a cargar la escena real de pruebas en la RAM
         AsyncOperation cargaFondo = SceneManager.LoadSceneAsync(gameSceneName);
-        cargaFondo.allowSceneActivation = false; // No dejes entrar al jugador todavía
+        cargaFondo.allowSceneActivation = false; // No deja entrar al jugador todavía
 
         float tiempoPasado = 0f;
 

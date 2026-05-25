@@ -6,4 +6,7 @@ public static class PlayerSelectionData
 {
     public static GameObject player1Prefab;
     public static GameObject player2Prefab;
+
+    public static Sprite player1Sprite;
+    public static Sprite player2Sprite;
 }
