@@ -1,4 +1,4 @@
-# Blast Mayhem
+# blast-mayhem
 
 Blast Mayhem is a 2D local multiplayer game developed in Unity. Two players compete in a physics-based arena using bombs, special pickups, movement abilities, and different bomb behaviors.
 
